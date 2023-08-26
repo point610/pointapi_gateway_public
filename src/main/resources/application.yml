@@ -1,0 +1,39 @@
+server:
+  port: 端口号
+
+spring:
+  cloud:
+    gateway:
+      httpclient:
+#        如果请求某接口时，5秒钟没有返回，让该请求强制中断
+        connect-timeout: 1000
+        response-timeout: 5000
+      default-filters:
+        - AddRequestHeader=流量染色key, 流量染色value
+      routes:
+        - id: interface_route
+          uri: http://ip地址:端口号
+          predicates:
+            - Path=/api/**
+          filters:
+#           限制请求头的大小不能超过1000B
+            - RequestHeaderSize=1000B
+
+
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
+
+dubbo:
+  application:
+    name: 用户名
+  protocol:
+    name: dubbo
+    port: 端口
+  registry:
+    id: nacos-registry
+    address: nacos://ip地址:端口号
